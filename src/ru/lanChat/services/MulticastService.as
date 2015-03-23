@@ -54,7 +54,8 @@ package ru.lanChat.services
 		public function sendChatMessage(message:String):void
 		{
 			var multicastMessage:MulticastMessage = new MulticastMessage(CHAT_MESSAGE_TYPE, _myParticipant, message);
-			_netGroup.post(multicastMessage);
+			_netGroup.post(multicastMessage.toObject());
+			dispatchEvent(new MulticastEvent(MulticastEvent.MESSAGE_RECEIVED, multicastMessage.toObject()));
 		}
 			
 		private var _connected:Boolean=false;
