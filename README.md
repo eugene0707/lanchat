@@ -9,8 +9,6 @@ LanChat
 
 Работающее приложение доступно по адресу http://eugene0707.github.io/lanchat/LanChat.html
 
-В Pepperflash (Chrome, Opera) multicast RTMFP не работает.
-
 TO-DO
 -----
 
