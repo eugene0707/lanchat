@@ -1,0 +1,67 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>ConnectionController.as</title>
+<link rel="stylesheet" type="text/css" href="../../../../SourceStyles.css"/>
+</head>
+
+<body><pre><span class="ActionScriptASDoc">/**
+ * @author Eugene Kondrashov
+ * Mar 21, 2015
+ */</span>
+<span class="ActionScriptpackage">package</span> <span class="ActionScriptDefault_Text">ru</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lanChat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">controllers</span>
+<span class="ActionScriptBracket/Brace">{</span>
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">ru</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lanChat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ExternalEvent</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">ru</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lanChat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">events</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MulticastEvent</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">ru</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lanChat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">services</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">ExternalService</span>;
+    <span class="ActionScriptReserved">import</span> <span class="ActionScriptDefault_Text">ru</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">lanChat</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">services</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">MulticastService</span>;
+
+    <span class="ActionScriptReserved">public</span> <span class="ActionScriptclass">class</span> <span class="ActionScriptDefault_Text">ConnectionController</span>
+    <span class="ActionScriptBracket/Brace">{</span>
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_externalService</span>:<span class="ActionScriptDefault_Text">ExternalService</span>;
+        
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptvar">var</span> <span class="ActionScriptDefault_Text">_multicastService</span>:<span class="ActionScriptDefault_Text">MulticastService</span>;
+        
+        <span class="ActionScriptReserved">public</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">ConnectionController</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">externalService</span>:<span class="ActionScriptDefault_Text">ExternalService</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">multicastService</span>:<span class="ActionScriptDefault_Text">MulticastService</span><span class="ActionScriptBracket/Brace">)</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_multicastService</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">multicastService</span>;
+            <span class="ActionScriptDefault_Text">_multicastService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">MulticastEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">CONNECTED</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">multicastConnectedHandler</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_multicastService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">MulticastEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">DISCONNECTED</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">multicastDisconnectedHandler</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_multicastService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">MulticastEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">FAILED</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">multicastConnectionFailedHandler</span><span class="ActionScriptBracket/Brace">)</span>;
+            
+            <span class="ActionScriptDefault_Text">_externalService</span> <span class="ActionScriptOperator">=</span> <span class="ActionScriptDefault_Text">externalService</span>;
+            <span class="ActionScriptDefault_Text">_externalService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ExternalEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">CONNECT</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">externalConnectHandler</span><span class="ActionScriptBracket/Brace">)</span>;
+            <span class="ActionScriptDefault_Text">_externalService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">addEventListener</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">ExternalEvent</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">DISCONNECT</span><span class="ActionScriptOperator">,</span> <span class="ActionScriptDefault_Text">externalDisconnectHandler</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">externalConnectHandler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span>:<span class="ActionScriptDefault_Text">ExternalEvent</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_multicastService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">connect</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">value</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">externalDisconnectHandler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span>:<span class="ActionScriptDefault_Text">ExternalEvent</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_multicastService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">disconnect</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">multicastConnectedHandler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span>:<span class="ActionScriptDefault_Text">MulticastEvent</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_externalService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sendConnected</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">value</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">multicastDisconnectedHandler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span>:<span class="ActionScriptDefault_Text">MulticastEvent</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_externalService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sendDisconnected</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+        <span class="ActionScriptReserved">private</span> <span class="ActionScriptfunction">function</span> <span class="ActionScriptDefault_Text">multicastConnectionFailedHandler</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptDefault_Text">event</span>:<span class="ActionScriptDefault_Text">MulticastEvent</span><span class="ActionScriptBracket/Brace">)</span>:<span class="ActionScriptReserved">void</span>
+        <span class="ActionScriptBracket/Brace">{</span>
+            <span class="ActionScriptDefault_Text">_externalService</span><span class="ActionScriptOperator">.</span><span class="ActionScriptDefault_Text">sendConnectionFailed</span><span class="ActionScriptBracket/Brace">(</span><span class="ActionScriptBracket/Brace">)</span>;
+        <span class="ActionScriptBracket/Brace">}</span>
+        
+    <span class="ActionScriptBracket/Brace">}</span>
+<span class="ActionScriptBracket/Brace">}</span>
+</pre></body>
+</html>

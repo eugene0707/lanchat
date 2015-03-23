@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<index>
+	<title>Source of LanChat</title>
+	<nodes>
+		<node label="html-template">
+			<node label="css">
+				<node icon="cssIcon" label="style.css" url="source/html-template/css/style.css.html"/>
+			</node>
+			<node label="history">
+				<node icon="cssIcon" label="history.css" url="source/html-template/history/history.css.html"/>
+				<node label="history.js" url="source/html-template/history/history.js.txt"/>
+				<node icon="htmlIcon" label="historyFrame.html" url="source/html-template/history/historyFrame.html"/>
+			</node>
+			<node label="img">
+				<node icon="imageIcon" label="me.gif" url="source/html-template/img/me.gif.html"/>
+				<node icon="imageIcon" label="u.gif" url="source/html-template/img/u.gif.html"/>
+			</node>
+			<node label="js">
+				<node label="controllers">
+					<node label="loginController.js" url="source/html-template/js/controllers/loginController.js.txt"/>
+					<node label="mainController.js" url="source/html-template/js/controllers/mainController.js.txt"/>
+					<node label="messagesController.js" url="source/html-template/js/controllers/messagesController.js.txt"/>
+					<node label="participantsController.js" url="source/html-template/js/controllers/participantsController.js.txt"/>
+					<node label="sendMessageController.js" url="source/html-template/js/controllers/sendMessageController.js.txt"/>
+				</node>
+				<node label="services">
+					<node label="flashAPI.js" url="source/html-template/js/services/flashAPI.js.txt"/>
+				</node>
+				<node label="views">
+					<node icon="htmlIcon" label="chat.login.html" url="source/html-template/js/views/chat.login.html"/>
+					<node icon="htmlIcon" label="chat.room.html" url="source/html-template/js/views/chat.room.html"/>
+					<node icon="htmlIcon" label="chat.room.messages.html" url="source/html-template/js/views/chat.room.messages.html"/>
+					<node icon="htmlIcon" label="chat.room.participants.html" url="source/html-template/js/views/chat.room.participants.html"/>
+					<node icon="htmlIcon" label="chat.room.send.html" url="source/html-template/js/views/chat.room.send.html"/>
+				</node>
+				<node label="app.js" url="source/html-template/js/app.js.txt"/>
+			</node>
+			<node icon="htmlIcon" label="index.template.html" url="source/html-template/index.template.html"/>
+			<node icon="swfIcon" label="playerProductInstall.swf" url="source/html-template/playerProductInstall.swf"/>
+			<node label="swfobject.js" url="source/html-template/swfobject.js.txt"/>
+		</node>
+		<node label="src">
+			<node icon="packageIcon" label="ru.lanChat.controllers" expanded="true">
+				<node icon="actionScriptIcon" label="ChatController.as" url="source/ru/lanChat/controllers/ChatController.as.html"/>
+				<node icon="actionScriptIcon" label="ConnectionController.as" url="source/ru/lanChat/controllers/ConnectionController.as.html"/>
+				<node icon="actionScriptIcon" label="EchoController.as" url="source/ru/lanChat/controllers/EchoController.as.html"/>
+			</node>
+			<node icon="packageIcon" label="ru.lanChat.dto" expanded="true">
+				<node icon="actionScriptIcon" label="MulticastMessage.as" url="source/ru/lanChat/dto/MulticastMessage.as.html"/>
+				<node icon="actionScriptIcon" label="Participant.as" url="source/ru/lanChat/dto/Participant.as.html"/>
+			</node>
+			<node icon="packageIcon" label="ru.lanChat.events" expanded="true">
+				<node icon="actionScriptIcon" label="ConnectionEvent.as" url="source/ru/lanChat/events/ConnectionEvent.as.html"/>
+				<node icon="actionScriptIcon" label="ExternalEvent.as" url="source/ru/lanChat/events/ExternalEvent.as.html"/>
+				<node icon="actionScriptIcon" label="MulticastEvent.as" url="source/ru/lanChat/events/MulticastEvent.as.html"/>
+				<node icon="actionScriptIcon" label="ValueEvent.as" url="source/ru/lanChat/events/ValueEvent.as.html"/>
+			</node>
+			<node label="ru.lanChat.models">
+			</node>
+			<node icon="packageIcon" label="ru.lanChat.services" expanded="true">
+				<node icon="actionScriptIcon" label="ExternalService.as" url="source/ru/lanChat/services/ExternalService.as.html"/>
+				<node icon="actionScriptIcon" label="MulticastService.as" url="source/ru/lanChat/services/MulticastService.as.html"/>
+			</node>
+			<node icon="mxmlAppIcon" selected="true" label="LanChat.as" url="source/LanChat.as.html"/>
+		</node>
+	</nodes>
+	<zipfile label="Download source (ZIP, 33K)" url="LanChat.zip">
+	</zipfile>
+	<sdklink label="Download Flex SDK" url="http://www.adobe.com/go/flex451_sdk_download">
+	</sdklink>
+</index>
