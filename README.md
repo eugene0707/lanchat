@@ -9,8 +9,13 @@ LanChat
 
 Работающее приложение доступно по адресу http://eugene0707.github.io/lanchat/LanChat.html
 
-Проверена работа в Firefox, Safari, IE.
-В Pepperflash (Chrome, Opera) multicast RTMFP работает не стабильно.
+Приложение полностью работоспособно в Firefox, Safari, IE под Windows. В Chrome и Opera - условно работоспособно.
+
+В Pepperflash (Chrome, Opera) multicast RTMFP работает нестабильно, а именно:
+1. Если к группе подключились только пользователи Pepperflash, то они не видят "соседей" и multicast RTMFP не работает. Трекер Chrome https://code.google.com/p/chromium/issues/detail?id=380715
+2. Если к группе подключились пользователи Pepperflash и Adobe Flash, то multicast работает нормально.
+3. Если в броузере отключить плагин Pepperflash и использовать Adobe Flash, то multicast работает нормально.
+
 
 TO-DO
 -----
