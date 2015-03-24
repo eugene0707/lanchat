@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('lanChat', ['swfobject', 'ui.router', 'services', 'controllers']);
+var app = angular.module('lanChat', ['swfobject', 'ui.router', 'luegg.directives', 'services', 'controllers']);
 var controllers = angular.module('controllers',[]);
 var services = angular.module('services', [])
 
