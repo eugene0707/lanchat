@@ -4,6 +4,7 @@
  */
 package ru.lanChat.controllers
 {
+    import ru.lanChat.dto.ConnectionParams;
     import ru.lanChat.events.ExternalEvent;
     import ru.lanChat.events.MulticastEvent;
     import ru.lanChat.services.ExternalService;
@@ -18,8 +19,6 @@ package ru.lanChat.controllers
         public function ConnectionController(externalService:ExternalService, multicastService:MulticastService)
         {
 			_multicastService = multicastService;
-			_multicastService.addEventListener(MulticastEvent.CONNECTED, multicastConnectedHandler);
-			_multicastService.addEventListener(MulticastEvent.DISCONNECTED, multicastDisconnectedHandler);
 			_multicastService.addEventListener(MulticastEvent.FAILED, multicastConnectionFailedHandler);
 			
 			_externalService = externalService;
@@ -29,22 +28,13 @@ package ru.lanChat.controllers
 
 		private function externalConnectHandler(event:ExternalEvent):void
 		{
-			_multicastService.connect(event.value);
+			var connectionParams:ConnectionParams = event.value;
+			_multicastService.connect(connectionParams);
 		}
 		
 		private function externalDisconnectHandler(event:ExternalEvent):void
 		{
 			_multicastService.disconnect();
-		}
-		
-		private function multicastConnectedHandler(event:MulticastEvent):void
-		{
-			_externalService.sendConnected(event.value);
-		}
-		
-		private function multicastDisconnectedHandler(event:MulticastEvent):void
-		{
-			_externalService.sendDisconnected();
 		}
 		
 		private function multicastConnectionFailedHandler(event:MulticastEvent):void

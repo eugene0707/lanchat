@@ -1,29 +1,26 @@
+/**
+ * @author Eugene Kondrashov
+ * Mar 21, 2015
+ */
 package ru.lanChat.dto
 {
 	public class Participant
 	{
 		
-		public function Participant(userName:String, id:String=null, nearId:String=null)
+		public function Participant(userName:String, peerId:String)
 		{
-			_id = (id) ? id : MulticastMessage.generateId(16);
-			_nearId = nearId;
 			_userName = userName;
+			_peerId = peerId;
+			_since = new Date();
 		}
 		
 		public function toObject():Object
 		{
 			var object:Object = new Object();
-			object.id = this.id;
 			object.userName = this.userName;
-			object.nearId = this.nearId;
+			object.peerId = this.peerId;
+			object.since = this.since;
 			return object;
-		}
-		
-		private var _id:String;
-		
-		public function get id():String
-		{
-			return _id;
 		}
 		
 		private var _userName:String;
@@ -33,11 +30,25 @@ package ru.lanChat.dto
 			return _userName;
 		}
 		
-		private var _nearId:String;
+		private var _peerId:String;
 		
-		public function get nearId():String
+		public function get peerId():String
 		{
-			return _nearId;
+			return _peerId;
+		}
+		
+		private var _since:Date;
+		
+		public function get since():Date
+		{
+			return _since;
+		}
+		
+		public static function fromObject(value:Object):Participant
+		{
+			var participant:Participant = new Participant(value.userName, value.peerId);
+			
+			return participant;
 		}
 		
 	}

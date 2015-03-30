@@ -9,6 +9,8 @@ package ru.lanChat.services
     import flash.external.ExternalInterface;
     import flash.utils.ByteArray;
     
+    import ru.lanChat.dto.ChatMessage;
+    import ru.lanChat.dto.ConnectionParams;
     import ru.lanChat.dto.Participant;
     import ru.lanChat.events.ExternalEvent;
     
@@ -44,6 +46,10 @@ package ru.lanChat.services
 		
 		private const SEND_CHAT_MESSAGE_CALL:String = "flashChatMessage";
 
+		private const SEND_PARTICIPANT_CONNECTED_CALL:String = "flashParticipantConnected";
+		
+		private const SEND_PARTICIPANT_DISCONNECTED_CALL:String = "flashParticipantDisconnected";
+		
 		private const SEND_STATUS_CALL:String = "flashStatus";
 				
 		private const SEND_ECHO_CALL:String = "flashEcho";
@@ -90,7 +96,9 @@ package ru.lanChat.services
 		
         private function connect(connectionParamsJson:String=null):void
         {
-            dispatchEvent(new ExternalEvent(ExternalEvent.CONNECT, connectionParamsJson));
+			var value:Object = deserialize(connectionParamsJson);
+			
+            dispatchEvent(new ExternalEvent(ExternalEvent.CONNECT, ConnectionParams.fromObject(value)));
         }
 
 		private function disconnect():void
@@ -112,7 +120,7 @@ package ru.lanChat.services
 
 		public function sendConnected(participant:Participant):void
 		{
-			ExternalInterface.call(SEND_CONNECTED_CALL, ExternalInterface.objectID, serialize(participant));
+			ExternalInterface.call(SEND_CONNECTED_CALL, ExternalInterface.objectID, serialize(participant.toObject()));
 		}
 		
 		public function sendDisconnected():void
@@ -125,9 +133,19 @@ package ru.lanChat.services
 			ExternalInterface.call(SEND_CONNECTION_FAILED_CALL, ExternalInterface.objectID);
 		}
 		
-		public function sendChatMessage(message:*):void
+		public function sendChatMessage(message:ChatMessage):void
 		{
-			ExternalInterface.call(SEND_CHAT_MESSAGE_CALL, ExternalInterface.objectID, serialize(message));
+			ExternalInterface.call(SEND_CHAT_MESSAGE_CALL, ExternalInterface.objectID, serialize(message.toObject()));
+		}
+		
+		public function sendParticipantConnected(participant:Participant):void
+		{
+			ExternalInterface.call(SEND_PARTICIPANT_CONNECTED_CALL, ExternalInterface.objectID, serialize(participant.toObject()));
+		}
+		
+		public function sendParticipantDisconnected(participant:Participant):void
+		{
+			ExternalInterface.call(SEND_PARTICIPANT_DISCONNECTED_CALL, ExternalInterface.objectID, serialize(participant.toObject()));
 		}
 		
 		public function sendStatus(statusName:String, statusValue:*):void

@@ -16,6 +16,10 @@ package ru.lanChat.events
 		
 		static public const MESSAGE_RECEIVED:String = "messageReceived";
 		
+		static public const NEIGHBOR_CONNECTED:String = "neighborConnected";
+		
+		static public const NEIGHBOR_DISCONNECTED:String = "neighborDisconnected";
+		
         public function MulticastEvent(type:String, value:* = null, bubbles:Boolean = false,
                                        cancelable:Boolean = false)
         {

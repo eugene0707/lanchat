@@ -10,6 +10,7 @@ services.factory('FlashAPI', function($rootScope, $window){
 
 	$window.flashConnected = function(objectId, message){
 		service.myParticipant=JSON.parse(message);
+		service.myParticipant.isMe = true;
 		$rootScope.$emit('flashAPI.connected', service.myParticipant);
 	}
 
@@ -23,6 +24,7 @@ services.factory('FlashAPI', function($rootScope, $window){
 
 	$window.flashChatMessage = function(objectId, message){
 		var dto=JSON.parse(message);
+		dto.isMe = (dto.sender.peerId == service.myParticipant.peerId);
 		$rootScope.$emit('flashAPI.chatMessage', dto);
 	}
 
@@ -42,47 +44,17 @@ services.factory('FlashAPI', function($rootScope, $window){
 	}
 
 	service.connect = function (userName){
-		flashObject().connect(userName);
-/*
-		var dto = {
-			eventName: 'flashAPI.connected',
-			data: {
-				userName: userName,
-				id: '56uubw5657u'
-			}
-		}
-		service.myParticipant=dto.data;
-		flashObject().echo(JSON.stringify(dto));
-*/
+		var dto = {userName: userName};
+
+		flashObject().connect(JSON.stringify(dto));
 	} 
 	
 	service.disconnect = function (){
 		flashObject().disconnect();
-/*
-		var dto = {
-			eventName: 'flashAPI.disconnected',
-			data: {}
-		}
-		flashObject().echo(JSON.stringify(dto));
-*/
 	} 
 	
 	service.sendMessage = function (message){
 		flashObject().sendMessage(message);
-/*
-		var dto = {
-			eventName: 'flashAPI.chatMessage',
-			data: {
-				sender: {
-					userName: 'user fio',
-					peerId: '56uubw5657u'
-				},
-				message: message
-			}
-		}
-		
-		flashObject().echo(JSON.stringify(dto));
-*/
 	} 
 	
 	

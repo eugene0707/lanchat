@@ -11,26 +11,25 @@ package ru.lanChat.services
 	import flash.net.NetConnection;
 	import flash.net.NetGroup;
 	
+	import ru.lanChat.dto.ConnectionParams;
 	import ru.lanChat.dto.MulticastMessage;
-	import ru.lanChat.dto.Participant;
 	import ru.lanChat.events.MulticastEvent;
 	
 	[Event(name = "failed", type = "ru.lanChat.events.MulticastEvent")]
 	[Event(name = "connected", type = "ru.lanChat.events.MulticastEvent")]
 	[Event(name = "disconnected", type = "ru.lanChat.events.MulticastEvent")]
 	[Event(name = "messageReceived", type = "ru.lanChat.events.MulticastEvent")]
-	
+	[Event(name = "neighborDisconnected", type = "ru.lanChat.events.MulticastEvent")]
+		
 	public class MulticastService extends EventDispatcher
 	{
-		public static const CHAT_MESSAGE_TYPE:String = "chatMessage";
-				
 		private var _netConnection:NetConnection;
 		
 		private var _netGroup:NetGroup;
 		
 		private var _groupSpecifier:GroupSpecifier;
 		
-		private var _myParticipant:Participant;
+		private var _connectionParams:ConnectionParams;
 		
 		public function MulticastService()
 		{
@@ -38,12 +37,12 @@ package ru.lanChat.services
 			init();
 		}
 				
-		public function connect(userName:String, serverAddr:String="rtmfp:", groupAddr:String="lanChat/room", multicastAddr:String="235.255.255.1:10000"):void
+		public function connect(connectionParams:ConnectionParams):void
 		{
-			_myParticipant = new Participant(userName);
-			_groupSpecifier = buildGroupSpec(groupAddr, multicastAddr);
+			_connectionParams = connectionParams;
+			_groupSpecifier = buildGroupSpec(_connectionParams.groupAddr, _connectionParams.multicastAddr);
 			
-			_netConnection.connect(serverAddr);
+			_netConnection.connect(_connectionParams.serverAddr);
 		}
 		
 		public function disconnect():void
@@ -51,16 +50,36 @@ package ru.lanChat.services
 			_netConnection.close();
 		}
 		
-		public function sendChatMessage(message:String):void
+		public function postGroupMessage(multicastMessage:MulticastMessage):void
 		{
-			var multicastMessage:MulticastMessage = new MulticastMessage(CHAT_MESSAGE_TYPE, _myParticipant, message);
 			_netGroup.post(multicastMessage.toObject());
-			dispatchEvent(new MulticastEvent(MulticastEvent.MESSAGE_RECEIVED, multicastMessage.toObject()));
+		}
+		
+		public function postNeighborMessage(multicastMessage:MulticastMessage, neighborId:String):void
+		{
+			var peerAddress:String = _netGroup.convertPeerIDToGroupAddress(neighborId);
+			var result:String = _netGroup.sendToNearest(multicastMessage.toObject(), peerAddress);
 		}
 			
 		private var _connected:Boolean=false;
 		
-		public function set connected(value:Boolean):void
+		public function get connected():Boolean
+		{
+			return _connected;
+		}
+		
+		public function get peerId():String
+		{
+			return (_connected) ? _netConnection.nearID : '';
+		}
+		
+		private function init():void
+		{
+			_netConnection = new NetConnection();
+			_netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnectionStatusHandler);
+		}
+		
+		private function setConnected(value:Boolean):void
 		{
 			if (_connected==value)
 				return;
@@ -68,20 +87,15 @@ package ru.lanChat.services
 			_connected=value;
 			
 			if (_connected)
-				dispatchEvent(new MulticastEvent(MulticastEvent.CONNECTED,_myParticipant))
+				dispatchEvent(new MulticastEvent(MulticastEvent.CONNECTED,_connectionParams))
 			else
 				dispatchEvent(new MulticastEvent(MulticastEvent.DISCONNECTED))
-		}
-		
-		public function get connected():Boolean
-		{
-			return _connected;
 		}
 		
 		private function cleanUp():void
 		{
 			_groupSpecifier = null;
-			_myParticipant = null;
+			_connectionParams = null;
 
 			if (!_netGroup)
 				return;
@@ -89,12 +103,6 @@ package ru.lanChat.services
 			_netGroup.close();
 			_netGroup.removeEventListener(NetStatusEvent.NET_STATUS, netGroupStatusHandler);
 			_netGroup = null;
-		}
-		
-		private function init():void
-		{
-			_netConnection = new NetConnection();
-			_netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnectionStatusHandler);
 		}
 		
 		private function buildGroupSpec(groupAddr:String, multicastAddr:String):GroupSpecifier
@@ -122,7 +130,8 @@ package ru.lanChat.services
 		
 		private function processMessage(message: Object):void
 		{
-			dispatchEvent(new MulticastEvent(MulticastEvent.MESSAGE_RECEIVED, message));
+			var multicastMessage:MulticastMessage = MulticastMessage.fromObject(message);
+			dispatchEvent(new MulticastEvent(MulticastEvent.MESSAGE_RECEIVED, multicastMessage));
 		}
 		
 		private function netConnectionStatusHandler(event:NetStatusEvent):void
@@ -134,7 +143,7 @@ package ru.lanChat.services
 					break;
 
 				case "NetConnection.Connect.Closed":
-					connected = false;
+					setConnected(false);
 					break;
 				
 				case "NetConnection.Connect.AppShutdown":
@@ -145,8 +154,8 @@ package ru.lanChat.services
 					cleanUp();
 					break;
 				
-				case "NetGroup.Connect.Success": 
-					connected = true;
+				case "NetGroup.Connect.Success":
+					setConnected(true);
 					break;
 				
 				default:
@@ -166,16 +175,17 @@ package ru.lanChat.services
 					break;
 				
 				case "NetGroup.SendTo.Notify": 
+					processMessage(event.info.message);
 					break;
 				case "NetGroup.Posting.Notify":
 					processMessage(event.info.message);
 					break;
 				
 				case "NetGroup.Neighbor.Connect":
-//					tbc
+					dispatchEvent(new MulticastEvent(MulticastEvent.NEIGHBOR_CONNECTED, event.info.peerID));
 					break;
 				case "NetGroup.Neighbor.Disconnect":
-//					tbc 
+					dispatchEvent(new MulticastEvent(MulticastEvent.NEIGHBOR_DISCONNECTED, event.info.peerID));
 					break;
 				
 				default:
